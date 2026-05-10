@@ -16,3 +16,8 @@ export const getProductList = async ({ pageParam = 0 }) => {
   );
   return response.data;
 };
+
+export const getProducts = async () => {
+  const response = await axios.get(`${baseUrl}/products`);
+  return response.data;
+};

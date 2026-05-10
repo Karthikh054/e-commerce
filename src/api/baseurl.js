@@ -1,2 +1,2 @@
-const baseUrl = "https://dummyjson.com";
+const baseUrl = import.meta.env.VITE_API_URL;
 export default baseUrl;

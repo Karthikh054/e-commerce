@@ -1,12 +1,12 @@
 import { useState, useEffect, useRef } from "react";
+import Navbar from "./Navbar";
+import Footer from "./Footer";
 import { useInfiniteQuery } from "@tanstack/react-query";
+import { getProductList } from "../api/authApi";
+import ProductCard from "./common/ProductCard";
+import ProductSkeleton from "./../component/product/ProductSkeleton";
 
-import MainLayout from "../../layout/MainLayout";
-import ProductCard from "../../common/ProductCard";
-import { getProductList } from "../../api/authApi";
-import ProductSkeleton from "./ProductSkeleton";
-
-export default function productList() {
+function ProductAll() {
   const {
     data,
     isLoading,
@@ -15,7 +15,7 @@ export default function productList() {
     hasNextPage,
     isFetchingNextPage,
   } = useInfiniteQuery({
-    queryKey: ["products"],
+    queryKey: ["getProducts"],
     queryFn: getProductList,
     initialPageParam: 0,
     getNextPageParam: (lastPage, allPages) => {
@@ -85,26 +85,30 @@ export default function productList() {
       }
     };
   }, [fetchNextPage, hasNextPage]);
-
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
   if (error) {
     return (
-      <MainLayout>
+      <>
         <h1 className="text-red-500 text-xl">Something went wrong</h1>
-      </MainLayout>
+      </>
     );
   }
-
   return (
-    <MainLayout>
-      <div className="flex justify-between items-center mb-6">
+    <div className="min-h-screen flex flex-col bg-gray-50">
+      <Navbar />
+      <div className="flex text-center justify-center mt-10 mb-10">
         <h1 className="text-2xl font-bold">Products</h1>
-        <div className="flex items-center gap-4">
+      </div>
+      <div className="flex justify-center mb-10 px-20">
+        <div className="w-full flex items-center gap-3">
           <input
             type="text"
             placeholder="Search..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="border border-gray-300 px-4 py-1.5 rounded-full focus:outline-none focus:ring-2 focus:ring-indigo-500 w-64"
+            className="border border-gray-300 px-4 py-1.5 rounded-full focus:outline-none focus:ring-2 focus:ring-indigo-500 w-full"
           />
           <select
             value={sortBy}
@@ -132,14 +136,9 @@ export default function productList() {
               </option>
             ))}
           </select>
-
-          <p className="text-gray-500 font-medium">
-            Total: {filteredProducts.length}
-          </p>
         </div>
       </div>
-
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 px-10">
         {isLoading
           ? Array.from({ length: 8 }).map((_, index) => (
               <ProductSkeleton key={index} />
@@ -153,6 +152,9 @@ export default function productList() {
           <p className="text-gray-500">Loading More Products...</p>
         )}
       </div>
-    </MainLayout>
+      <Footer />
+    </div>
   );
 }
+
+export default ProductAll;
